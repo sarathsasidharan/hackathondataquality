@@ -1,0 +1,39 @@
+{
+	"name": "ETLDemo",
+	"properties": {
+		"description": "ETLDemo",
+		"folder": {
+			"name": "DataFlowETL"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DataQualityMovies",
+						"type": "DatasetReference"
+					},
+					"name": "MoviesDataSet"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkForDataQuality",
+						"type": "DatasetReference"
+					},
+					"name": "SinkForETLDemo"
+				}
+			],
+			"transformations": [
+				{
+					"name": "RemoveInvalidYears"
+				},
+				{
+					"name": "AverageRatingPerYear"
+				}
+			],
+			"script": "source(output(\n\t\tmovie as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as short,\n\t\tRating as short,\n\t\t{Rotton Tomato} as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> MoviesDataSet\nMoviesDataSet alterRow(deleteIf(year<1900)) ~> RemoveInvalidYears\nRemoveInvalidYears aggregate(groupBy(year),\n\tAverageRate = avg(Rating)) ~> AverageRatingPerYear\nAverageRatingPerYear sink(input(\n\t\tcust_id as string,\n\t\tfirst_name as string,\n\t\tlast_name as string,\n\t\taddress as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkForETLDemo"
+		}
+	}
+}

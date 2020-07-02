@@ -1,0 +1,39 @@
+{
+	"name": "PivotETL",
+	"properties": {
+		"description": "PivotETL",
+		"folder": {
+			"name": "DataFlowETL"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ProductData",
+						"type": "DatasetReference"
+					},
+					"name": "ProductData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkForMoviesRatings",
+						"type": "DatasetReference"
+					},
+					"name": "SinkProduct"
+				}
+			],
+			"transformations": [
+				{
+					"name": "PivotAggregateAvgPricePerColor"
+				},
+				{
+					"name": "ChangeNullsSizeToNA"
+				}
+			],
+			"script": "source(output(\n\t\tProductID as short,\n\t\tName as string,\n\t\tProductNumber as string,\n\t\tColor as string,\n\t\tStandardCost as double,\n\t\tListPrice as double,\n\t\tSize as string,\n\t\tWeight as string,\n\t\tProductCategoryID as short,\n\t\tProductModelID as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> ProductData\nChangeNullsSizeToNA pivot(groupBy(Size),\n\tpivotBy(Color),\n\tavg = avg(StandardCost),\n\tcolumnNaming: '$N_$VCalulated',\n\tlateral: true) ~> PivotAggregateAvgPricePerColor\nProductData derive(Size = iif(isNull(Size) || Size == 'NULL', 'NA', Size),\n\t\tColor = iif(isNull(Color) || Color == 'NULL', 'NA', Color)) ~> ChangeNullsSizeToNA\nPivotAggregateAvgPricePerColor sink(input(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string,\n\t\tColumn_4 as string,\n\t\tColumn_5 as string,\n\t\tColumn_6 as string,\n\t\tColumn_7 as string,\n\t\tColumn_8 as string,\n\t\tColumn_9 as string,\n\t\tColumn_10 as string,\n\t\tColumn_11 as string,\n\t\tColumn_12 as string,\n\t\tColumn_13 as string,\n\t\tColumn_14 as string,\n\t\tColumn_15 as string,\n\t\tColumn_16 as string,\n\t\tColumn_17 as string,\n\t\tColumn_18 as string,\n\t\tColumn_19 as string,\n\t\tColumn_20 as string,\n\t\tColumn_21 as string,\n\t\tColumn_22 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkProduct"
+		}
+	}
+}

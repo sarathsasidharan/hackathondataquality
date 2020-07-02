@@ -1,0 +1,48 @@
+{
+	"name": "DQ02",
+	"properties": {
+		"description": "DQ02",
+		"folder": {
+			"name": "DataQuality"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DataQualityPatternsMovieDS",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkForMoviesRatings",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SoundexCheck"
+				},
+				{
+					"name": "LevenshteinCheck"
+				},
+				{
+					"name": "SurrogateKey1"
+				},
+				{
+					"name": "ZipCodeGeneration"
+				},
+				{
+					"name": "ConditionalSplit1"
+				}
+			],
+			"script": "parameters{\n\tfilename as string (\"sampledata/movies.csv\")\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\twildcardPaths:[($filename)]) ~> source1\nsource1 derive(mydupetitle = soundex(byName('title'))) ~> SoundexCheck\nsource1 derive(deviation = toString(levenshtein('Fawlty Towers', byName('title'))) + ' ' + byName('title')) ~> LevenshteinCheck\nLevenshteinCheck keyGenerate(output(sk as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 derive(zipcode = iif(sk % 2 ==1 , '12345-1234','98765')) ~> ZipCodeGeneration\nZipCodeGeneration split(regexMatch(zipcode, `\\d{5}-\\d{4}$`),\n\tdisjoint: false) ~> ConditionalSplit1@(valid, invalid)\nSoundexCheck sink(input(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string,\n\t\tColumn_4 as string,\n\t\tColumn_5 as string,\n\t\tColumn_6 as string,\n\t\tColumn_7 as string,\n\t\tColumn_8 as string,\n\t\tColumn_9 as string,\n\t\tColumn_10 as string,\n\t\tColumn_11 as string,\n\t\tColumn_12 as string,\n\t\tColumn_13 as string,\n\t\tColumn_14 as string,\n\t\tColumn_15 as string,\n\t\tColumn_16 as string,\n\t\tColumn_17 as string,\n\t\tColumn_18 as string,\n\t\tColumn_19 as string,\n\t\tColumn_20 as string,\n\t\tColumn_21 as string,\n\t\tColumn_22 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+		}
+	}
+}

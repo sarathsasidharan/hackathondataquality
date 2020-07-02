@@ -1,0 +1,60 @@
+{
+	"name": "TriggerDataWranglingFlow",
+	"properties": {
+		"description": "TriggerDataWranglingFlow",
+		"activities": [
+			{
+				"name": "HackathonDQWrangling",
+				"type": "ExecuteWranglingDataflow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "HackathonDQWrangling",
+						"type": "DataFlowReference"
+					}
+				}
+			},
+			{
+				"name": "HackathonDataQualityFlow",
+				"description": "This Data Flow is for Creating Alert Files",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "HackathonDQWrangling",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "HackathonDataQualityFlow",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					}
+				}
+			}
+		],
+		"annotations": []
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

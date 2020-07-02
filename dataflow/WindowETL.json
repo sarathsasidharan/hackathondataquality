@@ -1,0 +1,35 @@
+{
+	"name": "WindowETL",
+	"properties": {
+		"folder": {
+			"name": "DataFlowETL"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ProductData",
+						"type": "DatasetReference"
+					},
+					"name": "ProductSet"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkForDataQuality",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Window"
+				}
+			],
+			"script": "source(output(\n\t\tProductID as short,\n\t\tName as string,\n\t\tProductNumber as string,\n\t\tColor as string,\n\t\tStandardCost as double,\n\t\tListPrice as double,\n\t\tSize as string,\n\t\tWeight as string,\n\t\tProductCategoryID as short,\n\t\tProductModelID as short\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false) ~> ProductSet\nProductSet window(over(Color),\n\tasc(StandardCost, true),\n\tRanking = rank()) ~> Window\nWindow sink(input(\n\t\tcust_id as string,\n\t\tfirst_name as string,\n\t\tlast_name as string,\n\t\taddress as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+		}
+	}
+}
