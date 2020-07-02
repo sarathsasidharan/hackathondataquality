@@ -5,6 +5,7 @@
 		"activities": [
 			{
 				"name": "HackathonDQWrangling",
+				"description": "test hackathon commit",
 				"type": "ExecuteWranglingDataflow",
 				"dependsOn": [],
 				"policy": {
