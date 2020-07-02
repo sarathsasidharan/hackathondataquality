@@ -24,6 +24,7 @@
 			},
 			{
 				"name": "HackathonDataQualityFlow",
+				"description": "This Data Flow is for Creating Alert Files",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
