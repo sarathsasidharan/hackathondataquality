@@ -1,0 +1,47 @@
+{
+	"name": "HackathonDataQualityFlow",
+	"properties": {
+		"description": "Data Flow for Hackathon",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "HackathonDataQualitySink",
+						"type": "DatasetReference"
+					},
+					"name": "HackathonDataSet"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "HackathonDataQualitySink",
+						"type": "DatasetReference"
+					},
+					"name": "HackathonDataSetOutput"
+				},
+				{
+					"dataset": {
+						"referenceName": "HackathonDataQualitySink",
+						"type": "DatasetReference"
+					},
+					"name": "HackahtonDataSetInvalidCity"
+				},
+				{
+					"dataset": {
+						"referenceName": "HackathonDataQualitySink",
+						"type": "DatasetReference"
+					},
+					"name": "HackathonFinalDataSet"
+				}
+			],
+			"transformations": [
+				{
+					"name": "RuleSplitForAlerting"
+				}
+			],
+			"script": "source(output(\n\t\tId as string,\n\t\tAge as string,\n\t\tCity as string,\n\t\tAge_Valid as string,\n\t\tAge_Legal as string,\n\t\tAge_Pension as string,\n\t\tCity_NA as string,\n\t\tCity_Valid as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> HackathonDataSet\nHackathonDataSet split(Age_Valid==\"0\",\n\tCity_Valid==\"0\",\n\tdisjoint: false) ~> RuleSplitForAlerting@(AgeInvalid, CityInvalid, ValidData)\nRuleSplitForAlerting@AgeInvalid sink(input(\n\t\tId as string,\n\t\tAge as string,\n\t\tCity as string,\n\t\tAge_Valid as string,\n\t\tAge_Legal as string,\n\t\tAge_Pension as string,\n\t\tCity_NA as string,\n\t\tCity_Valid as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['ageinvalid.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> HackathonDataSetOutput\nRuleSplitForAlerting@CityInvalid sink(input(\n\t\tId as string,\n\t\tAge as string,\n\t\tCity as string,\n\t\tAge_Valid as string,\n\t\tAge_Legal as string,\n\t\tAge_Pension as string,\n\t\tCity_NA as string,\n\t\tCity_Valid as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['invalidcity.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> HackahtonDataSetInvalidCity\nRuleSplitForAlerting@ValidData sink(input(\n\t\tId as string,\n\t\tAge as string,\n\t\tCity as string,\n\t\tAge_Valid as string,\n\t\tAge_Legal as string,\n\t\tAge_Pension as string,\n\t\tCity_NA as string,\n\t\tCity_Valid as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['finaldataset.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> HackathonFinalDataSet"
+		}
+	}
+}

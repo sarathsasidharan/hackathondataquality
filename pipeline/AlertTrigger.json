@@ -1,0 +1,89 @@
+{
+	"name": "AlertTrigger",
+	"properties": {
+		"description": "AlertTrigger",
+		"activities": [
+			{
+				"name": "AgeInvalidTrigger",
+				"description": "AgeInvalidTrigger",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "CreateCompleteFileName",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-60.westeurope.logic.azure.com:443/workflows/5fcd13f1270d4d5eb88cc6714b9086c0/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NMjzOtu5rK-WgBHC_ayjQQowf6IWAyDJtqNtGQkgjzg",
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"body": {
+						"DataFactoryName": "@{pipeline().DataFactory}",
+						"PipelineName": "@{pipeline().Pipeline}",
+						"Subject": "@{pipeline().parameters.Subject}",
+						"Filepath": "@{variables('fileName')}",
+						"EmailTo": "@pipeline().parameters.EmailTo"
+					},
+					"datasets": [
+						{
+							"referenceName": "HackathonDataQualitySink",
+							"type": "DatasetReference"
+						}
+					]
+				}
+			},
+			{
+				"name": "CreateCompleteFileName",
+				"description": "CreateCompleteFileName",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "fileName",
+					"value": {
+						"value": "@concat(pipeline().parameters.sourceFolder,pipeline().parameters.sourceFile)",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"Subject": {
+				"type": "string",
+				"defaultValue": "Age Invalid Checker"
+			},
+			"sourceFolder": {
+				"type": "string",
+				"defaultValue": "NA"
+			},
+			"EmailTo": {
+				"type": "string",
+				"defaultValue": "sarathsasi87@gmail.com"
+			},
+			"sourceFile": {
+				"type": "string",
+				"defaultValue": "NA"
+			}
+		},
+		"variables": {
+			"fileName": {
+				"type": "String",
+				"defaultValue": "NA"
+			}
+		},
+		"annotations": []
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

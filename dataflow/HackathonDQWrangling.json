@@ -1,0 +1,29 @@
+{
+	"name": "HackathonDQWrangling",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "HackathonDataQuality",
+					"script": "",
+					"dataset": {
+						"referenceName": "HackathonDataQuality",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"sinks": [
+				{
+					"name": "Sink1",
+					"dataset": {
+						"referenceName": "HackathonDataQualitySink",
+						"type": "DatasetReference"
+					},
+					"script": "sink(input(\n\t\tId as string,\n\t\tAge as string,\n\t\tCity as string,\n\t\tAge_Valid as string,\n\t\tAge_Legal as string,\n\t\tAge_Pension as string,\n\t\tCity_NA as string,\n\t\tCity_Valid as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['dqoutput.csv'],\n\ttruncate: true,\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Sink1"
+				}
+			],
+			"script": "section Section1;\r\nshared HackathonDataQuality = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://dialcore.blob.core.windows.net/dataquality/hackathon/dqhackdataset.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = HackathonDataQuality,\r\n  #\"Changed column type\" = Table.TransformColumnTypes(Source, {{\"Age\", Int64.Type}}),\r\n  #\"Inserted conditional column\" = Table.AddColumn(#\"Changed column type\", \"Age_Valid\", each if [Age] > 0 then 1 else 0),\r\n  #\"Inserted conditional column 1\" = Table.AddColumn(#\"Inserted conditional column\", \"Age_Legal\", each if [Age] > 18 then 1 else 0),\r\n  #\"Inserted conditional column 2\" = Table.AddColumn(#\"Inserted conditional column 1\", \"Age_Pension\", each if [Age] > 67 then 1 else 0),\r\n  #\"Inserted conditional column 3\" = Table.AddColumn(#\"Inserted conditional column 2\", \"City_NA\", each if [City] <> \"\" then 1 else 0),\r\n  #\"Inserted conditional column 4\" = Table.AddColumn(#\"Inserted conditional column 3\", \"City_Valid\", each if [City] = \"Rome\" then 0 else if [City] = \"Milan\" then 0 else if [City] = \"Tokyo\" then 0 else 1),\r\n  #\"Changed column type 1\" = Table.TransformColumnTypes(#\"Inserted conditional column 4\", {{\"Age_Valid\", Int64.Type}, {\"Age_Legal\", Int64.Type}, {\"Age_Pension\", Int64.Type}, {\"City_NA\", Int64.Type}, {\"City_Valid\", Int64.Type}})\r\nin\r\n  #\"Changed column type 1\";\r\n"
+		}
+	}
+}

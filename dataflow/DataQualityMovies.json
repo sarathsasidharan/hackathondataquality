@@ -1,0 +1,36 @@
+{
+	"name": "DataQualityMovies",
+	"properties": {
+		"description": "DataQualityMovies",
+		"folder": {
+			"name": "DataQuality"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DataQualityMovies",
+						"type": "DatasetReference"
+					},
+					"name": "DataQualityMovies"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkForDataQuality",
+						"type": "DatasetReference"
+					},
+					"name": "DataQualitySink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterOutInvalidYears"
+				}
+			],
+			"script": "source(output(\n\t\tmovie as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as short,\n\t\tRating as short,\n\t\t{Rotton Tomato} as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> DataQualityMovies\nDataQualityMovies filter(year > 1800) ~> FilterOutInvalidYears\nFilterOutInvalidYears sink(input(\n\t\tcust_id as string,\n\t\tfirst_name as string,\n\t\tlast_name as string,\n\t\taddress as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DataQualitySink"
+		}
+	}
+}

@@ -1,0 +1,55 @@
+{
+	"name": "JoinETL",
+	"properties": {
+		"description": "JoinETL",
+		"folder": {
+			"name": "DataFlowETL"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "MovieLessCols",
+						"type": "DatasetReference"
+					},
+					"name": "MovieLessDataSet"
+				},
+				{
+					"dataset": {
+						"referenceName": "MoviesLessWithRatings",
+						"type": "DatasetReference"
+					},
+					"name": "MoviesWithRating"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkForMoviesRatings",
+						"type": "DatasetReference"
+					},
+					"name": "Sink4Join"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinOnTitle"
+				},
+				{
+					"name": "GetAverageRatingPerGenre"
+				},
+				{
+					"name": "RenameStream"
+				},
+				{
+					"name": "JoinAggregateWithMovieSet"
+				},
+				{
+					"name": "Union1"
+				}
+			],
+			"script": "source(output(\n\t\tmovieId as string,\n\t\ttitle as string,\n\t\tgenres as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false) ~> MovieLessDataSet\nsource(output(\n\t\tmovie as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as short,\n\t\tRating as short,\n\t\t{Rotton Tomato} as short\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false) ~> MoviesWithRating\nMovieLessDataSet, MoviesWithRating join(MovieLessDataSet@title == MoviesWithRating@title,\n\tjoinType:'inner',\n\tbroadcast: 'both')~> JoinOnTitle\nJoinOnTitle aggregate(groupBy(genres = MovieLessDataSet@genres),\n\tAverageRatingPerGenre = avg(Rating),\n\t\tmovieId = max(movieId)) ~> GetAverageRatingPerGenre\nJoinOnTitle select(mapColumn(\n\t\tmovieId,\n\t\ttitle = {MovieLessDataSet@title},\n\t\tgenres = {MovieLessDataSet@genres},\n\t\tmovie,\n\t\ttitle = {MoviesWithRating@title},\n\t\tgenres = {MoviesWithRating@genres},\n\t\tyear,\n\t\tRating,\n\t\t{Rotton Tomato}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenameStream\nGetAverageRatingPerGenre, RenameStream join(GetAverageRatingPerGenre@movieId == RenameStream@movieId,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinAggregateWithMovieSet\nMoviesWithRating, MovieLessDataSet union(byName: true)~> Union1\nJoinAggregateWithMovieSet sink(input(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string,\n\t\tColumn_4 as string,\n\t\tColumn_5 as string,\n\t\tColumn_6 as string,\n\t\tColumn_7 as string,\n\t\tColumn_8 as string,\n\t\tColumn_9 as string,\n\t\tColumn_10 as string,\n\t\tColumn_11 as string,\n\t\tColumn_12 as string,\n\t\tColumn_13 as string,\n\t\tColumn_14 as string,\n\t\tColumn_15 as string,\n\t\tColumn_16 as string,\n\t\tColumn_17 as string,\n\t\tColumn_18 as string,\n\t\tColumn_19 as string,\n\t\tColumn_20 as string,\n\t\tColumn_21 as string,\n\t\tColumn_22 as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tmapColumn(\n\t\tgenres = {GetAverageRatingPerGenre@genres},\n\t\tAverageRatingPerGenre,\n\t\tmovieId = {GetAverageRatingPerGenre@movieId},\n\t\ttitle,\n\t\tyear,\n\t\tRating,\n\t\t{Rotton Tomato}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Sink4Join"
+		}
+	}
+}

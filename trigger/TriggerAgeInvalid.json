@@ -1,0 +1,32 @@
+{
+	"name": "TriggerAgeInvalid",
+	"properties": {
+		"description": "TriggerAgeInvalid",
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "AlertTrigger",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"Subject": "Age Invalid Checker",
+					"sourceFolder": "@triggerBody().folderPath",
+					"EmailTo": "sarathsasi87@gmail.com",
+					"sourceFile": "@triggerBody().fileName"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/dataquality/blobs/output",
+			"blobPathEndsWith": "ageinvalid.csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/5c667bbb-a09e-4d96-bfe6-6659ade1e2cc/resourceGroups/devcon2019/providers/Microsoft.Storage/storageAccounts/dialcore",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

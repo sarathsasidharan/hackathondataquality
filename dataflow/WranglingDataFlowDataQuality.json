@@ -1,0 +1,32 @@
+{
+	"name": "WranglingDataFlowDataQuality",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"folder": {
+			"name": "DataQuality"
+		},
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "DataQualityMovies",
+					"script": "",
+					"dataset": {
+						"referenceName": "DataQualityMovies",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"sinks": [
+				{
+					"name": "Sink1",
+					"dataset": {
+						"referenceName": "SinkForDataQuality",
+						"type": "DatasetReference"
+					},
+					"script": "sink(input(\n\t\tcust_id as string,\n\t\tfirst_name as string,\n\t\tlast_name as string,\n\t\taddress as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Sink1"
+				}
+			],
+			"script": "section Section1;\r\nshared DataQualityMovies = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://dialcore.blob.core.windows.net/source/movies.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = DataQualityMovies,\r\n  #\"Filtered rows\" = Table.SelectRows(Source, each ([genres] <> \"Comedy\"))\r\nin\r\n  #\"Filtered rows\";\r\n"
+		}
+	}
+}

@@ -1,0 +1,31 @@
+{
+	"name": "ETLDataFlow",
+	"properties": {
+		"folder": {
+			"name": "DataFlowETL"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DataQualityMovies",
+						"type": "DatasetReference"
+					},
+					"name": "MoviesDataSet"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkForDataQuality",
+						"type": "DatasetReference"
+					},
+					"name": "MovieDataSetSink"
+				}
+			],
+			"transformations": [],
+			"script": "source(output(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\tRating as string,\n\t\t{Rotton Tomato} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> MoviesDataSet\nMoviesDataSet sink(input(\n\t\tcust_id as string,\n\t\tfirst_name as string,\n\t\tlast_name as string,\n\t\taddress as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> MovieDataSetSink"
+		}
+	}
+}
