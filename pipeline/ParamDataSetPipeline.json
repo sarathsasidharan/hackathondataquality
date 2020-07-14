@@ -1,0 +1,12 @@
+{
+	"name": "ParamDataSetPipeline",
+	"properties": {
+		"description": "ParamDataSetPipeline",
+		"parameters": {
+			"fileName": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
