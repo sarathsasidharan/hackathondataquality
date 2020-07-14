@@ -24,7 +24,10 @@
 								"value": "'@{pipeline().parameters.fileNamePipeline}'",
 								"type": "Expression"
 							},
-							"coloumnNamesDataFlow": "split($inColumns, ',')"
+							"coloumnNamesDataFlow": {
+								"value": "@pipeline().parameters.columnNamesPipeline",
+								"type": "Expression"
+							}
 						}
 					},
 					"compute": {
@@ -39,7 +42,7 @@
 				"type": "string"
 			},
 			"columnNamesPipeline": {
-				"type": "string"
+				"type": "array"
 			}
 		},
 		"annotations": []

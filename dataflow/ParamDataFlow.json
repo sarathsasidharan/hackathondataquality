@@ -25,9 +25,12 @@
 			"transformations": [
 				{
 					"name": "Select1"
+				},
+				{
+					"name": "ValidCols"
 				}
 			],
-			"script": "parameters{\n\tfileNameDataFlow as string,\n\tcoloumnNamesDataFlow as string,\n\tinColumns as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\twildcardPaths:[($fileNameDataFlow)]) ~> ParamDataFlow\nParamDataFlow select(mapColumn(\n\t\teach(match(in($coloumnNamesDataFlow,name)))\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 sink(input(\n\t\tcust_id as string,\n\t\tfirst_name as string,\n\t\tlast_name as string,\n\t\taddress as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ParamDataFlowSink"
+			"script": "parameters{\n\tfileNameDataFlow as string,\n\tcoloumnNamesDataFlow as any\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\twildcardPaths:[($fileNameDataFlow)]) ~> ParamDataFlow\nValidCols select(mapColumn(\n\t\tcolumns_array = columns_array\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nParamDataFlow derive(columns_array = split($coloumnNamesDataFlow,',')) ~> ValidCols\nSelect1 sink(input(\n\t\tcust_id as string,\n\t\tfirst_name as string,\n\t\tlast_name as string,\n\t\taddress as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ParamDataFlowSink"
 		}
 	}
 }
