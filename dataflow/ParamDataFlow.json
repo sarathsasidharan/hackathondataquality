@@ -1,0 +1,29 @@
+{
+	"name": "ParamDataFlow",
+	"properties": {
+		"description": "ParamDataFlow",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ParamTestDataSet",
+						"type": "DatasetReference"
+					},
+					"name": "ParamDataFlow"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkForDataQuality",
+						"type": "DatasetReference"
+					},
+					"name": "ParamDataFlowSink"
+				}
+			],
+			"transformations": [],
+			"script": "source(output(\n\t\tId as string,\n\t\tAge as string,\n\t\tCity as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> ParamDataFlow\nParamDataFlow sink(input(\n\t\tcust_id as string,\n\t\tfirst_name as string,\n\t\tlast_name as string,\n\t\taddress as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ParamDataFlowSink"
+		}
+	}
+}
