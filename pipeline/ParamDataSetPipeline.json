@@ -23,6 +23,10 @@
 							"fileNameDataFlow": {
 								"value": "'@{pipeline().parameters.fileNamePipeline}'",
 								"type": "Expression"
+							},
+							"coloumnNamesDataFlow": {
+								"value": "'@{pipeline().parameters.columnNamesPipeline}'",
+								"type": "Expression"
 							}
 						}
 					},
