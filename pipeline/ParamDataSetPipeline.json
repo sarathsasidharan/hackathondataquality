@@ -25,7 +25,7 @@
 								"type": "Expression"
 							},
 							"coloumnNamesDataFlow": {
-								"value": "'@{pipeline().parameters.columnNamesPipeline}'",
+								"value": "@pipeline().parameters.columnNamesPipeline",
 								"type": "Expression"
 							}
 						}
@@ -42,7 +42,7 @@
 				"type": "string"
 			},
 			"columnNamesPipeline": {
-				"type": "string"
+				"type": "array"
 			}
 		},
 		"annotations": []
