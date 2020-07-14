@@ -28,7 +28,7 @@
 			}
 		],
 		"parameters": {
-			"fileName": {
+			"fileNamePipeline": {
 				"type": "string"
 			}
 		},
