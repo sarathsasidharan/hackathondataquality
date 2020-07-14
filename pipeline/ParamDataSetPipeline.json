@@ -39,7 +39,7 @@
 				"type": "string"
 			},
 			"columnNamesPipeline": {
-				"type": "object"
+				"type": "string"
 			}
 		},
 		"annotations": []
