@@ -18,7 +18,13 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "ParamDataFlow",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"parameters": {
+							"fileNameDataFlow": {
+								"value": "'@{pipeline().parameters.fileNamePipeline}'",
+								"type": "Expression"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
@@ -29,6 +35,9 @@
 		],
 		"parameters": {
 			"fileNamePipeline": {
+				"type": "string"
+			},
+			"columnNamesPipeline": {
 				"type": "string"
 			}
 		},
