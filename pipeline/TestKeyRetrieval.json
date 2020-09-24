@@ -15,8 +15,14 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://keystoreforazure.vault.azure.net/keys/testkey/50abe1ad0799497888d2431a7db94967?api-version=7.0",
+					"url": "https://keystoreforazure.vault.azure.net/secrets/tenantid/b07113bdbb824e4ba5a5c956cc812e7f?api-version=7.0",
 					"method": "GET",
+					"linkedServices": [
+						{
+							"referenceName": "AzureKeyVault",
+							"type": "LinkedServiceReference"
+						}
+					],
 					"authentication": {
 						"type": "MSI",
 						"resource": "https://vault.azure.net"
