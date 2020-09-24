@@ -39,7 +39,7 @@
 				"typeProperties": {
 					"variableName": "val",
 					"value": {
-						"value": "@activity('Web1').output.value",
+						"value": "@activity('TestKeyRetrieval').output.value",
 						"type": "Expression"
 					}
 				}
