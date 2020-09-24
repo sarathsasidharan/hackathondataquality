@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "TestKeyRetrieval",
 	"properties": {
 		"activities": [
 			{
@@ -38,7 +38,10 @@
 				"userProperties": [],
 				"typeProperties": {
 					"variableName": "val",
-					"value": "@activity('Web1').output.value"
+					"value": {
+						"value": "@activity('Web1').output.value",
+						"type": "Expression"
+					}
 				}
 			}
 		],
