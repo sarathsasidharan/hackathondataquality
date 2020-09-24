@@ -24,7 +24,7 @@
 				}
 			},
 			{
-				"name": "val",
+				"name": "GetKeyValue",
 				"description": "",
 				"type": "SetVariable",
 				"dependsOn": [
